@@ -1,0 +1,7 @@
+modal>=0.64
+sentence-transformers>=5.4
+torch>=2.0
+numpy>=1.24
+pandas>=2.3
+huggingface_hub>=0.16
+datasets>=2.14
