@@ -43,5 +43,11 @@ docs/_build/
 *.parquet
 data/cache/
 
+# Pipeline / competition artifacts (pull from Modal volume locally)
+start_kit/pipeline/artifacts/*
+!start_kit/pipeline/artifacts/.gitkeep
+my_submission/
+my_submission.zip
+
 # Jupyter
 .ipynb_checkpoints/

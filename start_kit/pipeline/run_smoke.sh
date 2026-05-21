@@ -43,4 +43,12 @@ echo "=== 3/4 fetch weights from Modal volume ==="
 echo "=== 4/4 local predict smoke test ==="
 "$PYTHON" start_kit/pipeline/model.py
 
+if [[ -f start_kit/pipeline/artifacts/val_triples.npy ]]; then
+  echo "=== optional: val holdout (1000 rows) ==="
+  "$PYTHON" start_kit/pipeline/eval_val.py 1000 || true
+fi
+
+echo "=== sync Codabench zip (my_submission/) ==="
+bash start_kit/pipeline/sync_submission.sh
+
 echo "Done."

@@ -205,13 +205,17 @@ def _print_artifact_status() -> None:
 
 
 @app.local_entrypoint()
-def main(upload: bool = True):
-    """Train on Modal. Requires embed outputs in start_kit/pipeline/artifacts/."""
+def main(upload: bool = True, no_upload: bool = False):
+    """Train on Modal. Embeds must be on volume (from embed.py) or local artifacts/."""
+    if no_upload:
+        upload = False
     if modal.is_local():
         _print_artifact_status()
-        if not (LOCAL_ARTIFACTS_DIR / "item_embs.npy").exists():
-            raise FileNotFoundError("Run embed first: modal run start_kit/pipeline/embed.py")
         if upload:
+            if not (LOCAL_ARTIFACTS_DIR / "item_embs.npy").exists():
+                raise FileNotFoundError(
+                    "Run embed first: modal run start_kit/pipeline/embed.py"
+                )
             _upload_local_artifacts_to_volume()
         else:
             print("Skipping volume upload (using existing files on irt-pipeline-artifacts).")

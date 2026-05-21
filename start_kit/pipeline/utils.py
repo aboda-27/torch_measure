@@ -15,6 +15,18 @@ VAL_ITEM_FRAC = 0.2  # hold out 20% of items (all their responses go to val)
 SPLIT_SEED = 42
 
 
+def format_item_content(
+    benchmark: str,
+    condition: str | None,
+    item_content: str,
+) -> str:
+    """Text fed to MPNet for items; matches ``predict()`` (start_kit ``input`` fields)."""
+    bench = (benchmark or "").strip() or "unknown"
+    cond = (condition or "").strip() or "none"
+    body = (item_content or "").strip()
+    return f"Benchmark: {bench}\nCondition: {cond}\n\n{body}"
+
+
 def render_subject_content(subject: dict, fallback_subject_id: str) -> str:
     """Match hosted runtime subject_content format (see start_kit/README.md)."""
     display_name = subject.get("display_name") or fallback_subject_id

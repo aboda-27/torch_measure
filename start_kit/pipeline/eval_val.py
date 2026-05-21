@@ -14,11 +14,26 @@ PIPELINE_DIR = Path(__file__).resolve().parent
 ARTIFACTS_DIR = PIPELINE_DIR / "artifacts"
 
 sys.path.insert(0, str(PIPELINE_DIR))
-from model import _ensure_loaded, _get_encoder, _probability  # noqa: E402
+import model as submission_model  # noqa: E402
 
 
 def _invert_index(mapping: dict[str, int]) -> dict[int, str]:
     return {v: k for k, v in mapping.items()}
+
+
+def _require_models() -> None:
+    if submission_model.ENCODER is None or submission_model.MODEL is None:
+        raise RuntimeError(
+            "model.py did not load (missing artifacts?). "
+            "Pull: modal volume get --force irt-pipeline-artifacts "
+            "amortized_irt.pt model_meta.json subject2idx.json start_kit/pipeline/artifacts/"
+        )
+
+
+def _tensor_row(emb) -> torch.Tensor:
+    if isinstance(emb, torch.Tensor):
+        return emb.detach().clone()
+    return torch.tensor(emb, dtype=torch.float32)
 
 
 def main(max_rows: int | None = None) -> None:
@@ -26,9 +41,15 @@ def main(max_rows: int | None = None) -> None:
         if not (ARTIFACTS_DIR / name).exists():
             raise FileNotFoundError(
                 f"Missing {ARTIFACTS_DIR / name}\n"
-                "Pull weights: modal volume get --force irt-pipeline-artifacts amortized_irt.pt start_kit/pipeline/artifacts/\n"
-                "              modal volume get --force irt-pipeline-artifacts model_meta.json start_kit/pipeline/artifacts/"
+                "Pull from volume: modal volume get --force irt-pipeline-artifacts "
+                "<file> start_kit/pipeline/artifacts/"
             )
+
+    print("Loading model.py (IRT + MPNet at import)...", flush=True)
+    t0 = time.perf_counter()
+    _require_models()
+    encoder = submission_model.ENCODER
+    print(f"  ready ({time.perf_counter() - t0:.1f}s)", flush=True)
 
     print("Loading index maps...", flush=True)
     with open(ARTIFACTS_DIR / "item2idx.json") as f:
@@ -44,26 +65,19 @@ def main(max_rows: int | None = None) -> None:
     n = len(rows)
     print(f"Val rows to score: {n} / {len(val)}", flush=True)
 
-    print("Loading IRT checkpoint (amortized_irt.pt)...", flush=True)
-    t0 = time.perf_counter()
-    _ensure_loaded()
-    print(f"  checkpoint ready ({time.perf_counter() - t0:.1f}s)", flush=True)
-
-    print("Loading MPNet encoder (first run may download ~400MB — not hung)...", flush=True)
-    t0 = time.perf_counter()
-    encoder = _get_encoder()
-    print(f"  encoder ready ({time.perf_counter() - t0:.1f}s)", flush=True)
-
     unique_item_texts = sorted({idx2item[int(r[1])] for r in rows})
     print(f"Batch-encoding {len(unique_item_texts)} unique val items...", flush=True)
     t0 = time.perf_counter()
-    embs = encoder.encode(
-        unique_item_texts,
-        batch_size=64,
-        show_progress_bar=True,
-        convert_to_tensor=True,
-    )
-    item_emb_by_text = {text: embs[i] for i, text in enumerate(unique_item_texts)}
+    with torch.no_grad():
+        embs = encoder.encode(
+            unique_item_texts,
+            batch_size=64,
+            show_progress_bar=True,
+            convert_to_tensor=True,
+        )
+    item_emb_by_text = {
+        text: _tensor_row(embs[i]) for i, text in enumerate(unique_item_texts)
+    }
     print(f"  embeddings done ({time.perf_counter() - t0:.1f}s)", flush=True)
 
     print("Scoring rows...", flush=True)
@@ -75,7 +89,7 @@ def main(max_rows: int | None = None) -> None:
         s_idx, i_idx, y = int(row[0]), int(row[1]), float(row[2])
         item_text = idx2item[i_idx]
         subj_text = idx2subject[s_idx]
-        p = _probability(subj_text, item_emb_by_text[item_text])
+        p = submission_model._probability(subj_text, item_emb_by_text[item_text])
         probs.append(p)
         labels.append(y)
 
@@ -89,8 +103,8 @@ def main(max_rows: int | None = None) -> None:
     bce = torch.nn.functional.binary_cross_entropy(p_t, y_t).item()
     acc = ((p_t >= 0.5) == (y_t >= 0.5)).float().mean().item()
 
-    print(f"val BCE (predict API): {bce:.4f}")
-    print(f"val accuracy @ 0.5:    {acc:.4f}")
+    print(f"val BCE (_probability path): {bce:.4f}")
+    print(f"val accuracy @ 0.5:         {acc:.4f}")
 
 
 if __name__ == "__main__":
