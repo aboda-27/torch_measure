@@ -2,7 +2,7 @@
 
 How the amortized IRT pipeline works end-to-end for the [Predictive AI Evaluation Challenge](https://www.codabench.org/). For Gradescope/Codabench replication steps, see [../submission/INSTRUCTOR_README.md](../submission/INSTRUCTOR_README.md).
 
-Related docs: [start_kit/README.md](../README.md) (HF data + Codabench contract), [SUBMIT.md](../../SUBMIT.md) (upload).
+Related docs: [competition_submission/README.md](../README.md) (HF data + Codabench contract), [SUBMIT.md](../../SUBMIT.md) (upload).
 
 ---
 
@@ -93,19 +93,19 @@ The **best checkpoint** is saved using **`val_loss`** (live encode), so it align
 
 ```text
 torch_measure/                      # modal run from here
-  start_kit/training/
+  competition_submission/training/
     README.md                         # quick run (commands)
     OUTLINE.md                        # this file
     embed.py  train.py  data_hf.py  labeling.py  ...
     artifacts/                        # optional copy from Modal volume
-  start_kit/tools/                    # zip / smoke checks
+  competition_submission/tools/                    # zip / smoke checks
   submission/                         # inference (Gradescope entry)
   my_submission.zip                   # built by scripts/sync_codabench.sh
 ```
 
 Modal volume **`irt-pipeline-artifacts`** is the canonical store between embed and train.
 
-Local mirror: `artifacts/` (see `artifacts/MANIFEST.md`). Re-sync: `bash start_kit/training/scripts/pull_artifacts.sh`.
+Local mirror: `artifacts/` (see `artifacts/MANIFEST.md`). Re-sync: `bash competition_submission/training/scripts/pull_artifacts.sh`.
 
 ---
 
@@ -246,7 +246,7 @@ Optional tests: `tests/test_pipeline_sampling.py` at repo root.
 ```bash
 export PIPELINE_EMBED_SKIP_ITEMS=1
 export PIPELINE_EMBED_SUBJECTS_ONLY=1
-modal run --detach start_kit/training/embed.py --no-sync-local
+modal run --detach competition_submission/training/embed.py --no-sync-local
 ```
 
 **Legacy typo `items_embs.npy`:**

@@ -44,14 +44,14 @@ docs/_build/
 data/cache/
 
 # Training artifacts (~800MB+); mirror via pull_artifacts.sh
-start_kit/training/artifacts/*
-!start_kit/training/artifacts/.gitkeep
-!start_kit/training/artifacts/MANIFEST.md
+competition_submission/training/artifacts/*
+!competition_submission/training/artifacts/.gitkeep
+!competition_submission/training/artifacts/MANIFEST.md
 
 # Submission weights for Gradescope (repo clone)
-!start_kit/submission/artifacts/amortized_irt.pt
-!start_kit/submission/artifacts/model_meta.json
-!start_kit/submission/artifacts/subject2idx.json
+!competition_submission/submission/artifacts/amortized_irt.pt
+!competition_submission/submission/artifacts/model_meta.json
+!competition_submission/submission/artifacts/subject2idx.json
 
 my_submission/
 my_submission.zip

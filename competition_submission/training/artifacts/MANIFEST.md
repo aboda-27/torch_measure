@@ -43,5 +43,5 @@ Synced from Modal volume **`irt-pipeline-artifacts`**. Keep this whole folder fo
 From repo root:
 
 ```bash
-bash start_kit/training/scripts/pull_artifacts.sh
+bash competition_submission/training/scripts/pull_artifacts.sh
 ```

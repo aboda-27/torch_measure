@@ -20,7 +20,7 @@ def format_item_content(
     condition: str | None,
     item_content: str,
 ) -> str:
-    """Text fed to MPNet for items; matches ``predict()`` (start_kit ``input`` fields)."""
+    """Text fed to MPNet for items; matches ``predict()`` (competition_submission ``input`` fields)."""
     bench = (benchmark or "").strip() or "unknown"
     cond = (condition or "").strip() or "none"
     body = (item_content or "").strip()
@@ -28,7 +28,7 @@ def format_item_content(
 
 
 def render_subject_content(subject: dict, fallback_subject_id: str) -> str:
-    """Match hosted runtime subject_content format (see start_kit/README.md)."""
+    """Match hosted runtime subject_content format (see competition_submission/README.md)."""
     display_name = subject.get("display_name") or fallback_subject_id
     lines = [f"Name: {display_name}"]
     optional_fields = (

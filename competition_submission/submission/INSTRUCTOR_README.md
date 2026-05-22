@@ -5,7 +5,7 @@
 ## Layout in this repo
 
 ```text
-start_kit/submission/          ← you are here (inference)
+competition_submission/submission/          ← you are here (inference)
   model.py
   models.txt
   artifacts/
@@ -13,12 +13,12 @@ start_kit/submission/          ← you are here (inference)
     model_meta.json
     subject2idx.json
 
-start_kit/training/            ← embed, train, labeling rules
+competition_submission/training/            ← embed, train, labeling rules
   labeling.py
   embed.py, train.py, ...
 ```
 
-**Codabench:** build `my_submission.zip` with `bash start_kit/training/scripts/sync_codabench.sh` (zip has no `labeling.py`).
+**Codabench:** build `my_submission.zip` with `bash competition_submission/training/scripts/sync_codabench.sh` (zip has no `labeling.py`).
 
 ---
 
@@ -37,7 +37,7 @@ pip install "torch>=2.0" "sentence-transformers>=2.0" "numpy>=1.24"
 ## 2. Smoke test
 
 ```bash
-cd start_kit/submission
+cd competition_submission/submission
 python model.py
 ```
 
@@ -74,7 +74,7 @@ Adaptive labeling (`acquisition_function`) is stubbed — this submission ignore
 See [`../training/README.md`](../training/README.md). Quick sync from Modal:
 
 ```bash
-bash start_kit/training/scripts/pull_artifacts.sh
+bash competition_submission/training/scripts/pull_artifacts.sh
 ```
 
 **This checkpoint:** 16 benchmarks, `row_sample_frac=0.25`, live-encode val checkpoint — see `model_meta.json`.
@@ -92,16 +92,16 @@ export HF_TOKEN=hf_...   # or: modal secret create huggingface HF_TOKEN=...
 # optional: full rows instead of 25% subsample
 export PIPELINE_ROW_SAMPLE_FRAC=1.0
 
-bash start_kit/training/scripts/run_full_pipeline.sh
+bash competition_submission/training/scripts/run_full_pipeline.sh
 ```
 
 Or step by step (same paths Modal uses):
 
 ```bash
-modal run start_kit/training/embed.py
-modal run start_kit/training/train.py
-bash start_kit/training/scripts/pull_artifacts.sh
-bash start_kit/training/scripts/sync_codabench.sh
+modal run competition_submission/training/embed.py
+modal run competition_submission/training/train.py
+bash competition_submission/training/scripts/pull_artifacts.sh
+bash competition_submission/training/scripts/sync_codabench.sh
 ```
 
-Use **`start_kit/training/`** only — not `start_kit/pipeline/` (stale duplicate).
+Use **`competition_submission/training/`** only — not `competition_submission/pipeline/` (stale duplicate).

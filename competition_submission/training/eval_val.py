@@ -12,7 +12,7 @@ import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TRAINING_DIR = Path(__file__).resolve().parent
-SUBMISSION_DIR = REPO_ROOT / "start_kit" / "submission"
+SUBMISSION_DIR = REPO_ROOT / "competition_submission" / "submission"
 ARTIFACTS_DIR = TRAINING_DIR / "artifacts"
 
 sys.path.insert(0, str(SUBMISSION_DIR))
@@ -27,8 +27,8 @@ def _require_models() -> None:
     if submission_model.ENCODER is None or submission_model.MODEL is None:
         raise RuntimeError(
             "model.py did not load (missing submission artifacts?). "
-            "Copy weights: cp start_kit/training/artifacts/{amortized_irt.pt,model_meta.json,subject2idx.json} "
-            "start_kit/submission/artifacts/"
+            "Copy weights: cp competition_submission/training/artifacts/{amortized_irt.pt,model_meta.json,subject2idx.json} "
+            "competition_submission/submission/artifacts/"
         )
 
 
@@ -43,7 +43,7 @@ def main(max_rows: int | None = None) -> None:
         if not (ARTIFACTS_DIR / name).exists():
             raise FileNotFoundError(
                 f"Missing {ARTIFACTS_DIR / name}\n"
-                "Pull: bash start_kit/training/scripts/pull_artifacts.sh"
+                "Pull: bash competition_submission/training/scripts/pull_artifacts.sh"
             )
 
     print("Loading model.py (IRT + MPNet at import)...", flush=True)

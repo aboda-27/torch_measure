@@ -23,28 +23,28 @@ if [[ ! -x "$PYTHON" ]]; then
 fi
 
 echo "=== 1/4 embed (mode=$PIPELINE_SAMPLE_MODE per_domain=$PIPELINE_BENCHMARKS_PER_DOMAIN row_frac=$PIPELINE_ROW_SAMPLE_FRAC) ==="
-"$MODAL" run start_kit/training/embed.py
+"$MODAL" run competition_submission/training/embed.py
 
-if [[ ! -f start_kit/training/artifacts/item_embs.npy ]]; then
-  echo "ERROR: embed did not produce start_kit/training/artifacts/item_embs.npy"
+if [[ ! -f competition_submission/training/artifacts/item_embs.npy ]]; then
+  echo "ERROR: embed did not produce competition_submission/training/artifacts/item_embs.npy"
   exit 1
 fi
 
 echo "=== 2/4 train ==="
-"$MODAL" run start_kit/training/train.py
+"$MODAL" run competition_submission/training/train.py
 
 echo "=== 3/4 fetch weights from Modal volume ==="
-bash start_kit/training/scripts/pull_artifacts.sh
+bash competition_submission/training/scripts/pull_artifacts.sh
 
 echo "=== 4/4 local predict smoke test ==="
-"$PYTHON" start_kit/submission/model.py
+"$PYTHON" competition_submission/submission/model.py
 
-if [[ -f start_kit/training/artifacts/val_triples.npy ]]; then
+if [[ -f competition_submission/training/artifacts/val_triples.npy ]]; then
   echo "=== optional: val holdout (1000 rows) ==="
-  "$PYTHON" start_kit/training/eval_val.py 1000 || true
+  "$PYTHON" competition_submission/training/eval_val.py 1000 || true
 fi
 
 echo "=== sync Codabench zip (my_submission/) ==="
-bash start_kit/training/scripts/sync_codabench.sh
+bash competition_submission/training/scripts/sync_codabench.sh
 
 echo "Done."

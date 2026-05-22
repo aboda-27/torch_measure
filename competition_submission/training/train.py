@@ -111,7 +111,7 @@ def _upload_local_artifacts_to_volume() -> None:
     if missing:
         raise FileNotFoundError(
             f"Missing embed artifacts in {LOCAL_ARTIFACTS_DIR}: {missing}\n"
-            "Re-run: modal run start_kit/training/embed.py"
+            "Re-run: modal run competition_submission/training/embed.py"
         )
 
     print(f"Uploading artifacts from {LOCAL_ARTIFACTS_DIR} to volume ...")
@@ -305,7 +305,7 @@ def main(upload: bool = True, no_upload: bool = False):
         if upload:
             if not (LOCAL_ARTIFACTS_DIR / "item_embs.npy").exists():
                 raise FileNotFoundError(
-                    "Run embed first: modal run start_kit/training/embed.py"
+                    "Run embed first: modal run competition_submission/training/embed.py"
                 )
             _upload_local_artifacts_to_volume()
         else:

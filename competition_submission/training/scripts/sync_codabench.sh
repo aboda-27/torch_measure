@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Build Codabench zip from start_kit/submission/ (single source of truth).
+# Build Codabench zip from competition_submission/submission/ (single source of truth).
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$REPO_ROOT"
 
-SUB="start_kit/submission"
-TRAIN_ART="start_kit/training/artifacts"
+SUB="competition_submission/submission"
+TRAIN_ART="competition_submission/training/artifacts"
 OUT="my_submission"
 
 for f in amortized_irt.pt model_meta.json subject2idx.json; do
@@ -34,5 +34,5 @@ rm -f "my_submission.zip"
 echo "Synced → $OUT/ and my_submission.zip (from $SUB/)"
 PYTHON="${REPO_ROOT}/.venv/bin/python"
 if [[ -x "$PYTHON" ]]; then
-  "$PYTHON" start_kit/tools/check_submission_zip.py my_submission.zip
+  "$PYTHON" competition_submission/tools/check_submission_zip.py my_submission.zip
 fi

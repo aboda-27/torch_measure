@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Mirror the latest Modal run into start_kit/training/artifacts/
+# Mirror the latest Modal run into competition_submission/training/artifacts/
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$REPO_ROOT"
-ART="start_kit/training/artifacts"
-SUB_ART="start_kit/submission/artifacts"
+ART="competition_submission/training/artifacts"
+SUB_ART="competition_submission/submission/artifacts"
 VOL="irt-pipeline-artifacts"
 
 FILES=(

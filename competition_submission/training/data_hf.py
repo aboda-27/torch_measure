@@ -1,4 +1,4 @@
-"""Load measurement-db with domain-stratified benchmark selection (start_kit/README-aligned)."""
+"""Load measurement-db with domain-stratified benchmark selection (competition_submission/README-aligned)."""
 
 from __future__ import annotations
 

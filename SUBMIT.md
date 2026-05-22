@@ -8,8 +8,8 @@ Pre-built submission at repo root:
 Validated:
 
 ```bash
-python3 start_kit/tools/check_submission_zip.py my_submission.zip
-python3 start_kit/tools/run_smoke_test.py my_submission/
+python3 competition_submission/tools/check_submission_zip.py my_submission.zip
+python3 competition_submission/tools/run_smoke_test.py my_submission/
 ```
 
 ## Upload
@@ -23,9 +23,9 @@ Limits: 50 submissions/team/day (UTC).
 ## Rebuild after re-training
 
 ```bash
-bash start_kit/training/scripts/sync_codabench.sh
+bash competition_submission/training/scripts/sync_codabench.sh
 ```
 
-Copies `start_kit/submission/` → `my_submission/` and rebuilds the zip.
+Copies `competition_submission/submission/` → `my_submission/` and rebuilds the zip.
 
 `model.py` loads MPNet + IRT **at import** (not inside `predict()`). On Codabench it uses `/app/hf_cache` + `local_files_only=True` per `models.txt`.
