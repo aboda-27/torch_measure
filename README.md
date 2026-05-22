@@ -24,14 +24,6 @@ uv pip install torch_measure        # into the active environment
 uv add torch_measure                # into a uv-managed project
 ```
 
-## Course submission (Predictive AI Evaluation)
-
-Gradescope / reproducibility:
-
-- **Run inference:** [start_kit/submission/README.md](start_kit/submission/README.md)
-- **Training pipeline:** [start_kit/training/README.md](start_kit/training/README.md)
-- **Codabench zip:** `bash start_kit/training/scripts/sync_codabench.sh` → upload `my_submission.zip` ([SUBMIT.md](SUBMIT.md))
-
 ## Contributing
 
 We welcome contributions! Please see our [contributing guidelines](CONTRIBUTING.md) for details, or drop by our [Discord](https://discord.gg/F6xbEwvvhb) to chat.

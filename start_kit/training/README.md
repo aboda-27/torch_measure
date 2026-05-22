@@ -1,6 +1,6 @@
 # Pipeline outline
 
-How the amortized IRT pipeline works end-to-end for the [Predictive AI Evaluation Challenge](https://www.codabench.org/). For Gradescope/Codabench replication steps, see [../submission/README.md](../submission/README.md).
+How the amortized IRT pipeline works end-to-end for the [Predictive AI Evaluation Challenge](https://www.codabench.org/). For Gradescope/Codabench replication steps, see [../submission/instructor_readme.md](../submission/instructor_readme.md).
 
 Related docs: [start_kit/README.md](../README.md) (HF data + Codabench contract), [SUBMIT.md](../../SUBMIT.md) (upload).
 
