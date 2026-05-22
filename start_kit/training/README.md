@@ -1,6 +1,6 @@
 # Pipeline outline
 
-How the amortized IRT pipeline works end-to-end for the [Predictive AI Evaluation Challenge](https://www.codabench.org/). For Gradescope/Codabench replication steps, see [README.md](README.md).
+How the amortized IRT pipeline works end-to-end for the [Predictive AI Evaluation Challenge](https://www.codabench.org/). For Gradescope/Codabench replication steps, see [../submission/README.md](../submission/README.md).
 
 Related docs: [start_kit/README.md](../README.md) (HF data + Codabench contract), [SUBMIT.md](../../SUBMIT.md) (upload).
 
@@ -23,7 +23,7 @@ measurement-db (HF, 16 benchmarks)
          │
          ├──────────────────────────────┐
          ▼                              ▼
-   labels.py                      MPNet (embed.py)
+   labeling.py                    MPNet (embed.py)
    response → y                   item text → vectors
          │                              │
          ▼                              ▼
@@ -93,17 +93,19 @@ The **best checkpoint** is saved using **`val_loss`** (live encode), so it align
 
 ```text
 torch_measure/                      # modal run from here
-  start_kit/pipeline/
+  start_kit/training/
     README.md                         # quick run (commands)
     OUTLINE.md                        # this file
-    embed.py  train.py  model.py  data_hf.py  labels.py  ...
+    embed.py  train.py  data_hf.py  labeling.py  ...
     artifacts/                        # optional copy from Modal volume
   start_kit/tools/                    # zip / smoke checks
-  my_submission/                      # built by sync_submission.sh
-  my_submission.zip
+  submission/                         # inference (Gradescope entry)
+  my_submission.zip                   # built by scripts/sync_codabench.sh
 ```
 
 Modal volume **`irt-pipeline-artifacts`** is the canonical store between embed and train.
+
+Local mirror: `artifacts/` (see `artifacts/MANIFEST.md`). Re-sync: `bash start_kit/training/scripts/pull_artifacts.sh`.
 
 ---
 
@@ -116,7 +118,7 @@ Modal volume **`irt-pipeline-artifacts`** is the canonical store between embed a
 - Optional row subsample: `PIPELINE_ROW_SAMPLE_FRAC` (default 0.25 in code; use `1.0` for full replication).
 - Builds unique item/subject strings and integer indices.
 
-### 2. Label (`labels.py`)
+### 2. Label (`labeling.py`)
 
 Raw `response` values are not all 0/1. Rules follow `response_type`:
 
@@ -224,16 +226,16 @@ predict(input: dict, labeled: list[dict] | None = None) -> float
 | File | Role |
 |------|------|
 | `data_hf.py` | HF load, joins |
-| `labels.py` | Response → label |
+| `labeling.py` | Response → label |
 | `sampling.py` | Benchmark selection |
 | `utils.py` | Splits, formatting |
 | `embed.py` | Modal embed orchestrator |
 | `train.py` | Modal training |
 | `model.py` | Submission |
 | `eval_val.py` | Local val BCE |
-| `sync_submission.sh` | Build `my_submission.zip` |
+| `scripts/sync_codabench.sh` | Build `my_submission.zip` from `submission/` |
 
-Optional tests: `tests/test_pipeline_labels.py` at repo root.
+Optional tests: `tests/test_pipeline_sampling.py` at repo root.
 
 ---
 
@@ -244,7 +246,7 @@ Optional tests: `tests/test_pipeline_labels.py` at repo root.
 ```bash
 export PIPELINE_EMBED_SKIP_ITEMS=1
 export PIPELINE_EMBED_SUBJECTS_ONLY=1
-modal run --detach start_kit/pipeline/embed.py --no-sync-local
+modal run --detach start_kit/training/embed.py --no-sync-local
 ```
 
 **Legacy typo `items_embs.npy`:**
@@ -263,7 +265,7 @@ Re-run `train.py` after fixing embeddings; delete stale `amortized_irt.pt` if tr
 
 ## Training on more than 16 benchmarks
 
-Point `PIPELINE_REPO_ID` at a bucket with long-form parquets for more benchmarks, set `PIPELINE_SAMPLE_MODE=all`, re-embed and re-train. `labels.py` applies by `response_type` automatically.
+Point `PIPELINE_REPO_ID` at a bucket with long-form parquets for more benchmarks, set `PIPELINE_SAMPLE_MODE=all`, re-embed and re-train. `labeling.py` applies by `response_type` automatically.
 
 ---
 

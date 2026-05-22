@@ -2,7 +2,7 @@
 # Smoke pipeline: stratified benchmark sample + row subsample (run each step separately).
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$REPO_ROOT"
 
 export PIPELINE_SAMPLE_MODE="${PIPELINE_SAMPLE_MODE:-stratified}"
@@ -23,32 +23,28 @@ if [[ ! -x "$PYTHON" ]]; then
 fi
 
 echo "=== 1/4 embed (mode=$PIPELINE_SAMPLE_MODE per_domain=$PIPELINE_BENCHMARKS_PER_DOMAIN row_frac=$PIPELINE_ROW_SAMPLE_FRAC) ==="
-"$MODAL" run start_kit/pipeline/embed.py
+"$MODAL" run start_kit/training/embed.py
 
-if [[ ! -f start_kit/pipeline/artifacts/item_embs.npy ]]; then
-  echo "ERROR: embed did not produce start_kit/pipeline/artifacts/item_embs.npy"
+if [[ ! -f start_kit/training/artifacts/item_embs.npy ]]; then
+  echo "ERROR: embed did not produce start_kit/training/artifacts/item_embs.npy"
   exit 1
 fi
 
 echo "=== 2/4 train ==="
-"$MODAL" run start_kit/pipeline/train.py
-
-ARTIFACTS="start_kit/pipeline/artifacts"
-mkdir -p "$ARTIFACTS"
+"$MODAL" run start_kit/training/train.py
 
 echo "=== 3/4 fetch weights from Modal volume ==="
-"$MODAL" volume get --force irt-pipeline-artifacts amortized_irt.pt "$ARTIFACTS/" || true
-"$MODAL" volume get --force irt-pipeline-artifacts model_meta.json "$ARTIFACTS/" || true
+bash start_kit/training/scripts/pull_artifacts.sh
 
 echo "=== 4/4 local predict smoke test ==="
-"$PYTHON" start_kit/pipeline/model.py
+"$PYTHON" start_kit/submission/model.py
 
-if [[ -f start_kit/pipeline/artifacts/val_triples.npy ]]; then
+if [[ -f start_kit/training/artifacts/val_triples.npy ]]; then
   echo "=== optional: val holdout (1000 rows) ==="
-  "$PYTHON" start_kit/pipeline/eval_val.py 1000 || true
+  "$PYTHON" start_kit/training/eval_val.py 1000 || true
 fi
 
 echo "=== sync Codabench zip (my_submission/) ==="
-bash start_kit/pipeline/sync_submission.sh
+bash start_kit/training/scripts/sync_codabench.sh
 
 echo "Done."

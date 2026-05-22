@@ -23,9 +23,9 @@ Limits: 50 submissions/team/day (UTC).
 ## Rebuild after re-training
 
 ```bash
-bash start_kit/pipeline/sync_submission.sh
+bash start_kit/training/scripts/sync_codabench.sh
 ```
 
-Copies `start_kit/pipeline/model.py` + `models.txt` + artifacts → `my_submission/` and rebuilds the zip.
+Copies `start_kit/submission/` → `my_submission/` and rebuilds the zip.
 
 `model.py` loads MPNet + IRT **at import** (not inside `predict()`). On Codabench it uses `/app/hf_cache` + `local_files_only=True` per `models.txt`.

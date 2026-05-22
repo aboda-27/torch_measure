@@ -36,18 +36,27 @@ htmlcov/
 # Docs
 docs/_build/
 
-# Data / Models
+# Data / Models (broad; submission checkpoint excepted below)
 *.pt
 *.pth
 *.pkl
 *.parquet
 data/cache/
 
-# Pipeline / competition artifacts (pull from Modal volume locally)
-start_kit/pipeline/artifacts/*
-!start_kit/pipeline/artifacts/.gitkeep
+# Training artifacts (~800MB+); mirror via pull_artifacts.sh
+start_kit/training/artifacts/*
+!start_kit/training/artifacts/.gitkeep
+!start_kit/training/artifacts/MANIFEST.md
+
+# Submission weights for Gradescope (repo clone)
+!start_kit/submission/artifacts/amortized_irt.pt
+!start_kit/submission/artifacts/model_meta.json
+!start_kit/submission/artifacts/subject2idx.json
+
 my_submission/
 my_submission.zip
+gradescope_submission/
+gradescope_submission.zip
 
 # Jupyter
 .ipynb_checkpoints/

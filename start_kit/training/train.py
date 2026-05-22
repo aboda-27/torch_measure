@@ -29,16 +29,16 @@ _base_image = modal.Image.debian_slim(python_version="3.11").pip_install(
 
 image = _base_image
 if modal.is_local():
-    _pipeline_dir = Path(__file__).resolve().parent
-    _repo_src = (_pipeline_dir / ".." / ".." / "src").resolve()
-    sys.path.insert(0, str(_pipeline_dir))
+    _training_dir = Path(__file__).resolve().parent
+    _repo_src = (_training_dir / ".." / ".." / "src").resolve()
+    sys.path.insert(0, str(_training_dir))
     image = image.add_local_dir(str(_repo_src), remote_path="/root/src")
-    image = image.add_local_dir(str(_pipeline_dir), remote_path="/root/pipeline")
+    image = image.add_local_dir(str(_training_dir), remote_path="/root/training")
 
 if modal.is_local():
     from utils import ENCODER_NAME, EMBEDDING_DIM, load_mappings, load_train_val_triples  # noqa: E402
 else:
-    sys.path.insert(0, "/root/pipeline")
+    sys.path.insert(0, "/root/training")
     from utils import ENCODER_NAME, EMBEDDING_DIM, load_mappings, load_train_val_triples  # noqa: E402
 
 ARTIFACTS_PATH = "/artifacts"
@@ -111,7 +111,7 @@ def _upload_local_artifacts_to_volume() -> None:
     if missing:
         raise FileNotFoundError(
             f"Missing embed artifacts in {LOCAL_ARTIFACTS_DIR}: {missing}\n"
-            "Re-run: modal run start_kit/pipeline/embed.py"
+            "Re-run: modal run start_kit/training/embed.py"
         )
 
     print(f"Uploading artifacts from {LOCAL_ARTIFACTS_DIR} to volume ...")
@@ -305,7 +305,7 @@ def main(upload: bool = True, no_upload: bool = False):
         if upload:
             if not (LOCAL_ARTIFACTS_DIR / "item_embs.npy").exists():
                 raise FileNotFoundError(
-                    "Run embed first: modal run start_kit/pipeline/embed.py"
+                    "Run embed first: modal run start_kit/training/embed.py"
                 )
             _upload_local_artifacts_to_volume()
         else:

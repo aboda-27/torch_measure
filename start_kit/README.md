@@ -3,6 +3,14 @@
 This starting kit supports the active code-submission path for the Predictive
 AI Evaluation Challenge.
 
+**This repo’s implementation:**
+
+| Path | Purpose |
+|------|---------|
+| [`submission/README.md`](submission/README.md) | **Gradescope** — run `predict()` (inference) |
+| [`training/README.md`](training/README.md) | Modal embed/train, labeling rules |
+| [`training/scripts/sync_codabench.sh`](training/scripts/sync_codabench.sh) | Build `my_submission.zip` for Codabench |
+
 Download:
 
 - the starter kit from Codabench
@@ -18,21 +26,12 @@ day (UTC), with a 1000-submission total limit for the competition phase.
 ## Contents
 
 ```text
-starting_kit/
-  README.md
-  sample_code_submission/
-    model.py
-    labeling.py
-  sample_data/
-    test/
-    ref/
-  templates/
-    hf_submission/
-    multi_hf_submission/
-    labeling_addon/
-  tools/
-    check_submission_zip.py
-    run_smoke_test.py
+start_kit/
+  README.md              # competition handbook (this file)
+  submission/            # model.py + weights (Gradescope entry)
+  training/              # embed.py, train.py, labeling.py
+  tools/                 # check_submission_zip.py, run_smoke_test.py
+  sample_data/           # local smoke-test CSVs
 ```
 
 ## Loading The Public Training Data
@@ -164,17 +163,10 @@ response tables.
 
 ## Which Starter To Use
 
-- `sample_code_submission/`
-  Minimal `model.py` plus an optional `labeling.py` example. Remove
-  `labeling.py` if you want the platform's default random label sample.
-- `templates/hf_submission/`
-  Local HuggingFace inference using exactly one repo declared in `models.txt`.
-  Use `sample_code_submission/` if you do not need a HuggingFace model.
-- `templates/multi_hf_submission/`
-  Advanced example for loading multiple declared HuggingFace repos from the
-  local cache.
-- `templates/labeling_addon/`
-  Optional `labeling.py` example.
+- `submission/`
+  Amortized IRT `model.py` plus `artifacts/` for Codabench and Gradescope.
+- `training/`
+  Full pipeline: HF load, `labeling.py`, Modal embed/train scripts.
 
 ## Local Preflight Checks
 
@@ -182,8 +174,7 @@ Start from the sample submission or one of the templates, then create the upload
 ZIP from inside your submission directory so `model.py` is at the archive root:
 
 ```bash
-cp -R sample_code_submission my_submission
-(cd my_submission && zip -r ../my_submission.zip .)
+bash training/scripts/sync_codabench.sh
 ```
 
 From the starting-kit directory, check the ZIP layout and run a tiny local

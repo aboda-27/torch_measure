@@ -86,10 +86,10 @@ def _ensure_hf_hub_auth() -> None:
     print(f"HF Hub authenticated (token …{token[-4:]})")
 
 
-def _setup_pipeline_path() -> None:
+def _setup_training_path() -> None:
     if "/root/src" not in sys.path:
         sys.path.insert(0, "/root/src")
-    sys.path.insert(0, "/root/pipeline")
+    sys.path.insert(0, "/root/training")
 
 
 app = modal.App("irt-embed")
@@ -115,10 +115,10 @@ image = _base_image.run_commands(
 )
 
 if modal.is_local():
-    _pipeline_dir = Path(__file__).resolve().parent
-    _repo_src = (_pipeline_dir / ".." / ".." / "src").resolve()
+    _training_dir = Path(__file__).resolve().parent
+    _repo_src = (_training_dir / ".." / ".." / "src").resolve()
     image = image.add_local_dir(str(_repo_src), remote_path="/root/src")
-    image = image.add_local_dir(str(_pipeline_dir), remote_path="/root/pipeline")
+    image = image.add_local_dir(str(_training_dir), remote_path="/root/training")
 
 _encoder = None
 
@@ -239,7 +239,7 @@ def merge_shards(kind: str, n_shards: int) -> tuple[int, int]:
 def embed_orchestrator() -> dict[str, int]:
     """Load HF, save triples/mappings, parallel ``embed_shard.starmap``, merge."""
     _ensure_hf_hub_auth()
-    _setup_pipeline_path()
+    _setup_training_path()
 
     from data_hf import load_representative_training_data
     from utils import VAL_ITEM_FRAC, save_mappings, save_train_val_triples, split_triples_by_item

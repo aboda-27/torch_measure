@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from labels import label_rule_summary, load_benchmark_label_specs, responses_to_binary_labels
+from labeling import label_rule_summary, load_benchmark_label_specs, responses_to_binary_labels
 from sampling import (
     RawTriple,
     get_sampling_config,

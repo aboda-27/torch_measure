@@ -10,10 +10,12 @@ from pathlib import Path
 import numpy as np
 import torch
 
-PIPELINE_DIR = Path(__file__).resolve().parent
-ARTIFACTS_DIR = PIPELINE_DIR / "artifacts"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+TRAINING_DIR = Path(__file__).resolve().parent
+SUBMISSION_DIR = REPO_ROOT / "start_kit" / "submission"
+ARTIFACTS_DIR = TRAINING_DIR / "artifacts"
 
-sys.path.insert(0, str(PIPELINE_DIR))
+sys.path.insert(0, str(SUBMISSION_DIR))
 import model as submission_model  # noqa: E402
 
 
@@ -24,9 +26,9 @@ def _invert_index(mapping: dict[str, int]) -> dict[int, str]:
 def _require_models() -> None:
     if submission_model.ENCODER is None or submission_model.MODEL is None:
         raise RuntimeError(
-            "model.py did not load (missing artifacts?). "
-            "Pull: modal volume get --force irt-pipeline-artifacts "
-            "amortized_irt.pt model_meta.json subject2idx.json start_kit/pipeline/artifacts/"
+            "model.py did not load (missing submission artifacts?). "
+            "Copy weights: cp start_kit/training/artifacts/{amortized_irt.pt,model_meta.json,subject2idx.json} "
+            "start_kit/submission/artifacts/"
         )
 
 
@@ -41,8 +43,7 @@ def main(max_rows: int | None = None) -> None:
         if not (ARTIFACTS_DIR / name).exists():
             raise FileNotFoundError(
                 f"Missing {ARTIFACTS_DIR / name}\n"
-                "Pull from volume: modal volume get --force irt-pipeline-artifacts "
-                "<file> start_kit/pipeline/artifacts/"
+                "Pull: bash start_kit/training/scripts/pull_artifacts.sh"
             )
 
     print("Loading model.py (IRT + MPNet at import)...", flush=True)

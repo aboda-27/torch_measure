@@ -5,8 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-PIPELINE_DIR = Path(__file__).resolve().parents[1] / "start_kit" / "pipeline"
-sys.path.insert(0, str(PIPELINE_DIR))
+TRAINING_DIR = Path(__file__).resolve().parents[1] / "start_kit" / "training"
+sys.path.insert(0, str(TRAINING_DIR))
 
 from sampling import (  # noqa: E402
     resolve_benchmark_ids,
