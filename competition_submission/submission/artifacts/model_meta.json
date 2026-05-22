@@ -1,1 +1,1 @@
-{"n_subjects": 907, "n_items": 219184, "best_val_loss": 0.508480275536959, "best_val_loss_idx": 0.5084802832741003, "val_metric": "live_encode"}
+{"n_subjects": 907, "n_items": 219184, "best_val_loss": 0.5077216811191577, "best_val_loss_idx": 0.5077216824659935, "val_metric": "live_encode"}
