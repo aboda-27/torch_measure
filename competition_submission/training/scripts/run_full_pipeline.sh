@@ -7,7 +7,6 @@ cd "$REPO_ROOT"
 
 export PIPELINE_SAMPLE_MODE="${PIPELINE_SAMPLE_MODE:-stratified}"
 export PIPELINE_BENCHMARKS_PER_DOMAIN="${PIPELINE_BENCHMARKS_PER_DOMAIN:-1}"
-export PIPELINE_ROW_SAMPLE_FRAC="${PIPELINE_ROW_SAMPLE_FRAC:-0.1}"
 unset PIPELINE_MAX_DATASETS
 
 if [[ -z "${HF_TOKEN:-}" ]]; then
@@ -22,7 +21,7 @@ if [[ ! -x "$PYTHON" ]]; then
   MODAL="modal"
 fi
 
-echo "=== 1/4 embed (mode=$PIPELINE_SAMPLE_MODE per_domain=$PIPELINE_BENCHMARKS_PER_DOMAIN row_frac=$PIPELINE_ROW_SAMPLE_FRAC) ==="
+echo "=== 1/4 embed (mode=$PIPELINE_SAMPLE_MODE per_domain=$PIPELINE_BENCHMARKS_PER_DOMAIN row_frac=0.25) ==="
 "$MODAL" run competition_submission/training/embed.py
 
 if [[ ! -f competition_submission/training/artifacts/item_embs.npy ]]; then

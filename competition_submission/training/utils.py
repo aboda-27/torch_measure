@@ -157,7 +157,7 @@ def load_training_data() -> tuple[list[str], list[str], list[tuple[int, int, flo
     """Load measurement-db with representative sampling and build indexed triples.
 
     Sampling is configured via environment variables (see pipeline README):
-    ``PIPELINE_SAMPLE_MODE`` (default ``stratified``), ``PIPELINE_ROW_SAMPLE_FRAC``
+    ``PIPELINE_SAMPLE_MODE`` (default ``stratified``); row subsample is fixed at 25% in ``sampling.py``
     (default ``0.25``), ``PIPELINE_BENCHMARKS_PER_DOMAIN``, ``PIPELINE_MAX_DATASETS``
     (``legacy_max`` mode only).
 

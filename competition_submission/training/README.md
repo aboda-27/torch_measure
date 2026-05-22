@@ -115,7 +115,7 @@ Local mirror: `artifacts/` (see `artifacts/MANIFEST.md`). Re-sync: `bash competi
 
 - Reads `benchmarks.parquet` for the benchmark list and metadata.
 - Loads each `{benchmark_id}.parquet` (responses), joins `items.parquet` and `subjects.parquet`.
-- Optional row subsample: `PIPELINE_ROW_SAMPLE_FRAC` (default 0.25 in code; use `1.0` for full replication).
+- Row subsample: fixed **25%** of response rows per benchmark (`DEFAULT_ROW_SAMPLE_FRAC` in `sampling.py`).
 - Builds unique item/subject strings and integer indices.
 
 ### 2. Label (`labeling.py`)
@@ -188,7 +188,6 @@ Condition: {condition}
 |----------|---------|---------|
 | `PIPELINE_REPO_ID` | `aims-foundations/measurement-db` | HF dataset |
 | `PIPELINE_SAMPLE_MODE` | `stratified` | Benchmark selection (`all` = all in manifest) |
-| `PIPELINE_ROW_SAMPLE_FRAC` | `0.25` | Row subsample (use `1.0` for full data) |
 | `PIPELINE_LIKERT_10_MIN` | `7` | mtbench threshold |
 | `PIPELINE_LIKERT_5_MIN` | `4` | ultrafeedback threshold |
 | `PIPELINE_FRACTION_MIN` | `0.5` | fractional benchmarks |

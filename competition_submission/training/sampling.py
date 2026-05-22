@@ -76,7 +76,7 @@ def subsample_rows(
 def get_sampling_config() -> dict[str, Any]:
     """Read sampling knobs from environment."""
     mode = os.environ.get("PIPELINE_SAMPLE_MODE", DEFAULT_SAMPLE_MODE).strip().lower()
-    row_frac = float(os.environ.get("PIPELINE_ROW_SAMPLE_FRAC", str(DEFAULT_ROW_SAMPLE_FRAC)))
+    row_frac = DEFAULT_ROW_SAMPLE_FRAC
 
     per_domain = os.environ.get("PIPELINE_BENCHMARKS_PER_DOMAIN")
     per_domain_cap = int(per_domain) if per_domain else None

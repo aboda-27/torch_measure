@@ -52,8 +52,6 @@ modal setup
 modal secret create huggingface HF_TOKEN=hf_...   # once
 export HF_TOKEN=hf_...
 
-export PIPELINE_ROW_SAMPLE_FRAC=1.0   # optional; script default is 0.1 (smoke)
-
 bash competition_submission/training/scripts/run_full_pipeline.sh
 ```
 
