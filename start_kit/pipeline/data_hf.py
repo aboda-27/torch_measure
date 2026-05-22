@@ -11,6 +11,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from labels import label_rule_summary, load_benchmark_label_specs, responses_to_binary_labels
 from sampling import (
     RawTriple,
     get_sampling_config,
@@ -26,8 +27,12 @@ from utils import (
     render_subject_content,
 )
 
-REPO_ID = "aims-foundations/measurement-db"
+DEFAULT_REPO_ID = "aims-foundations/measurement-db"
 REGISTRY_FILES = {"subjects.parquet", "items.parquet", "benchmarks.parquet"}
+
+
+def _repo_id() -> str:
+    return os.environ.get("PIPELINE_REPO_ID", DEFAULT_REPO_ID).strip() or DEFAULT_REPO_ID
 
 _RESPONSE_COLS = (
     "subject_id",
@@ -63,7 +68,7 @@ def _hf_download(filename: str) -> Path:
 
     return Path(
         hf_hub_download(
-            repo_id=REPO_ID,
+            repo_id=_repo_id(),
             filename=filename,
             repo_type="dataset",
         )
@@ -258,7 +263,9 @@ def triples_from_frames(
         for b, c, t in zip(bench_series, cond_series, content_series, strict=True)
     ]
     subject_contents = merged["subject_id"].map(subject_content_by_id).tolist()
-    labels = (merged["response"].astype(float) >= 0.5).astype(float).tolist()
+    label_specs = load_benchmark_label_specs()
+    label_arr = responses_to_binary_labels(benchmark_id, merged["response"], label_specs)
+    labels = label_arr.tolist()
     return list(zip(subject_contents, item_contents, labels, strict=True))
 
 
@@ -348,7 +355,7 @@ def load_triples_bulk_hf(benchmark_ids: list[str]) -> list[RawTriple]:
     from datasets import Features, Value, load_dataset
     from huggingface_hub import HfApi
 
-    repo_files = HfApi().list_repo_files(repo_id=REPO_ID, repo_type="dataset")
+    repo_files = HfApi().list_repo_files(repo_id=_repo_id(), repo_type="dataset")
     selected = set(benchmark_ids)
     response_files = sorted(
         name
@@ -374,13 +381,13 @@ def load_triples_bulk_hf(benchmark_ids: list[str]) -> list[RawTriple]:
 
     print(f"Bulk loading {len(response_files)} response parquets from HF...")
     responses = load_dataset(
-        REPO_ID,
+        _repo_id(),
         data_files=response_files,
         features=response_features,
         split="train",
     )
-    items_ds = load_dataset(REPO_ID, data_files="items.parquet", split="train")
-    subjects_ds = load_dataset(REPO_ID, data_files="subjects.parquet", split="train")
+    items_ds = load_dataset(_repo_id(), data_files="items.parquet", split="train")
+    subjects_ds = load_dataset(_repo_id(), data_files="subjects.parquet", split="train")
 
     items_df = pd.DataFrame([row for row in items_ds])
     subjects_df = pd.DataFrame([row for row in subjects_ds])
@@ -453,6 +460,7 @@ def load_representative_training_data(
         f"{', before join' if early_subsample else ''})"
     )
 
+    label_specs = load_benchmark_label_specs()
     sampling_meta = {
         **benchmark_summary,
         "n_rows_raw": n_raw,
@@ -460,6 +468,7 @@ def load_representative_training_data(
         "bulk_load": config["bulk_load"],
         "load_mode": load_mode,
         "early_row_subsample": early_subsample,
+        "label_rules": label_rule_summary(label_specs),
     }
     save_sampling_artifacts(benchmark_summary, sampling_meta, artifacts_dir)
 

@@ -161,7 +161,9 @@ def load_training_data() -> tuple[list[str], list[str], list[tuple[int, int, flo
     (default ``0.25``), ``PIPELINE_BENCHMARKS_PER_DOMAIN``, ``PIPELINE_MAX_DATASETS``
     (``legacy_max`` mode only).
 
-    Labels are binarized: response >= 0.5 -> 1.0, else 0.0.
+    Labels are binarized per benchmark ``response_type`` (see ``labels.py``):
+    binary as-is, likert_10 (mtbench) >= 7, likert_5 (ultrafeedback) >= 4,
+    fraction/mixed with scale-appropriate rules, rewardbench ties -> 0.5.
     Writes ``selected_benchmarks.json`` and ``sampling_meta.json`` under artifacts/.
     """
     from data_hf import load_representative_training_data
